@@ -21,6 +21,7 @@ public class EnemyAI : MonoBehaviour
     public Animator animator;
 
     private Rigidbody rb;
+    private CharacterSfx sfx;
     private PlayerHealth playerHealth;
 
     private bool isChasing = false;
@@ -30,6 +31,7 @@ public class EnemyAI : MonoBehaviour
 
     void Awake()
     {
+        sfx = CharacterSfx.Get(gameObject);
         rb =
             GetComponent<Rigidbody>();
     }
@@ -46,6 +48,7 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
+        if (Time.timeScale == 0f) return;
         if (player == null)
             return;
 
@@ -190,6 +193,7 @@ public class EnemyAI : MonoBehaviour
     void AttackPlayer()
     {
         isAttacking = true;
+        sfx.EnemyAttack();
 
         attackTimer =
             attackCooldown;

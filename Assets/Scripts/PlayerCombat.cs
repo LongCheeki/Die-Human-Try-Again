@@ -25,6 +25,14 @@ public class PlayerCombat : MonoBehaviour
     private bool canAttack = true;
 
     private Quaternion originalRotation;
+    private CharacterSfx sfx;
+    private PlayerHealth health;
+
+    void Awake()
+    {
+        sfx = CharacterSfx.Get(gameObject);
+        health = GetComponent<PlayerHealth>();
+    }
 
     void Start()
     {
@@ -42,6 +50,9 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
+        if (Time.timeScale == 0f || (health != null && health.GetCurrentHealth() <= 0f))
+            return;
+
         if (Mouse.current == null)
             return;
 
@@ -63,6 +74,7 @@ public class PlayerCombat : MonoBehaviour
     {
         isAttacking = true;
         canAttack = false;
+        sfx.Attack();
 
         // 如果当前是战士形态
         // 播放战士攻击动画

@@ -1,0 +1,15 @@
+Preview candidates only; not connected to the game. Original audio, filenames changed.
+Downloaded 2026-09-11
+
+01-03: artisticdude, Swishes Sound Pack, CC0
+https://opengameart.org/content/swishes-sound-pack
+04-06: StarNinjas, 20 Sword Sound Effects (Attacks and Clashes), CC0
+https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes
+License: https://creativecommons.org/publicdomain/zero/1.0/
+
+01-Swish-1.wav: swishes/swish-1.wav, 0.13s
+02-Swish-5.wav: swishes/swish-5.wav, 0.13s
+03-Swish-10.wav: swishes/swish-10.wav, 0.12s
+04-Sword-1.ogg: sword - StarNinjas/sword.1.ogg, 0.97s
+05-Sword-4.ogg: sword - StarNinjas/sword.4.ogg, 0.58s
+06-Sword-8.ogg: sword - StarNinjas/sword.8.ogg, 0.96s

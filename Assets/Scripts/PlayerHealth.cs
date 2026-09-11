@@ -31,6 +31,13 @@ public class PlayerHealth : MonoBehaviour
     public PlayerHealthUI healthUI;
 
     private Rigidbody rb;
+    private CharacterSfx sfx;
+
+    void Awake()
+    {
+        sfx = CharacterSfx.Get(gameObject);
+        CastleBattleMusic.Ensure(gameObject);
+    }
 
     private bool isDead = false;
 
@@ -70,6 +77,7 @@ public class PlayerHealth : MonoBehaviour
             finalDamage *= warriorDamageMultiplier;
         }
 
+        float healthBeforeDamage = currentHealth;
         currentHealth -= finalDamage;
 
         currentHealth = Mathf.Clamp(
@@ -77,6 +85,8 @@ public class PlayerHealth : MonoBehaviour
             0f,
             maxHealth
         );
+
+        if (currentHealth < healthBeforeDamage) sfx.Hurt();
 
         Debug.Log(
             "Player took " +

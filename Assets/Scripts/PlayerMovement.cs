@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     public Animator currentAnimator;
 
     private Rigidbody rb;
+    private CharacterSfx sfx;
 
     private Vector3 moveInput;
     private Vector3 lastMoveDirection = Vector3.forward;
@@ -34,10 +35,12 @@ public class PlayerMovement : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        sfx = CharacterSfx.Get(gameObject);
     }
 
     void Update()
     {
+        if (Time.timeScale == 0f) return;
         ReadInput();
 
         if (!isDashing)
@@ -49,8 +52,15 @@ public class PlayerMovement : MonoBehaviour
         HandleDash();
     }
 
+    void OnEnable()
+    {
+        if (sfx != null) sfx.ResetMovement();
+    }
+
     void FixedUpdate()
     {
+        sfx.Movement(!isDashing && moveInput.sqrMagnitude > 0.01f &&
+            Mathf.Abs(rb.linearVelocity.y) < 0.5f);
         if (isDashing)
         {
             DashMovement();
@@ -168,6 +178,7 @@ public class PlayerMovement : MonoBehaviour
     void StartDash()
     {
         isDashing = true;
+        sfx.Dash();
         canDash = false;
 
         dashTimer = dashDuration;
