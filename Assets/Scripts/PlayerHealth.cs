@@ -62,16 +62,26 @@ public class PlayerHealth : MonoBehaviour
     // 带击退方向的受伤
     public void TakeDamage(float damage, Vector3 knockbackDirection)
     {
+        ApplyDamage(damage, knockbackDirection, false);
+    }
+
+    public void TakeTrapDamage(float damage)
+    {
+        ApplyDamage(damage, Vector3.zero, true);
+    }
+
+    private void ApplyDamage(float damage, Vector3 knockbackDirection, bool trap)
+    {
         if (isDead)
             return;
 
-        if (isInvincible)
+        if (isInvincible && !trap)
             return;
 
         float finalDamage = damage;
 
         // Warrior 受到更少伤害
-        if (playerMimic != null &&
+        if (!trap && playerMimic != null &&
             playerMimic.IsWarrior())
         {
             finalDamage *= warriorDamageMultiplier;
@@ -130,9 +140,7 @@ public class PlayerHealth : MonoBehaviour
             );
         }
 
-        StartCoroutine(
-            InvincibilityCoroutine()
-        );
+        if (!trap) StartCoroutine(InvincibilityCoroutine());
     }
 
     IEnumerator InvincibilityCoroutine()

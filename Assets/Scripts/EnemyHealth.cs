@@ -10,7 +10,8 @@ public class EnemyHealth : MonoBehaviour
     public float knockbackSpeed = 8f;
     public float knockbackDuration = 0.25f;
 
-    private int currentHealth;
+    private float currentHealth;
+    public float GetCurrentHealth() => currentHealth;
 
     private Rigidbody rb;
     private EnemyAI enemyAI;
@@ -28,7 +29,7 @@ public class EnemyHealth : MonoBehaviour
         currentHealth = maxHealth;
     }
 
-    public void TakeDamage(int damage, Vector3 knockbackDirection)
+    public void TakeDamage(float damage, Vector3 knockbackDirection)
     {
         if (currentHealth <= 0)
             return;
@@ -44,9 +45,8 @@ public class EnemyHealth : MonoBehaviour
         }
 
         // ¿ªÊ¼»÷ÍË
-        StartCoroutine(
-            KnockbackCoroutine(knockbackDirection)
-        );
+        if (knockbackDirection != Vector3.zero)
+            StartCoroutine(KnockbackCoroutine(knockbackDirection));
     }
 
     IEnumerator KnockbackCoroutine(Vector3 direction)
