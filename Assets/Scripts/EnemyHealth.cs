@@ -12,6 +12,8 @@ public class EnemyHealth : MonoBehaviour
 
     private float currentHealth;
     public float GetCurrentHealth() => currentHealth;
+    public event System.Action<float> HealthChanged;
+    public event System.Action Died;
 
     private Rigidbody rb;
     private EnemyAI enemyAI;
@@ -34,7 +36,8 @@ public class EnemyHealth : MonoBehaviour
         if (currentHealth <= 0)
             return;
 
-        currentHealth -= damage;
+        currentHealth = Mathf.Max(0f, currentHealth - damage);
+        HealthChanged?.Invoke(currentHealth);
 
         Debug.Log("Enemy HP: " + currentHealth);
 
@@ -115,6 +118,7 @@ public class EnemyHealth : MonoBehaviour
             enemyAI.enabled = false;
         }
 
+        Died?.Invoke();
         Destroy(gameObject);
     }
 }

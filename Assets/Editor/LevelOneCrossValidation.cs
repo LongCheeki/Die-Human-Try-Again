@@ -50,10 +50,11 @@ public class CrossValidationRunner : MonoBehaviour
     {
         yield return WaitTicks(0.3f);
         var player=Object.FindFirstObjectByType<PlayerHealth>();
+        player.restartSceneOnDeath=false;
         var rooms=Object.FindObjectsByType<BattleRoom>(FindObjectsSortMode.None).OrderBy(r=>r.name).ToArray();
         var traps=Object.FindObjectsByType<SpikeTrap>(FindObjectsSortMode.None);
         Check(rooms.Length==4 && traps.Length==8,"Four cross rooms and eight spike patches");
-        Check(rooms.All(r=>r.entrance==r.exit && r.entrance.IsOpen),"All four branch doors initially open");
+        Check(rooms.All(r=>r.entrance.IsOpen && (r.exit==r.entrance || !r.exit.IsOpen)),"All branch entrances open; separate onward doors wait for room clear");
         player.playerMovement.enabled=false;player.GetComponent<Rigidbody>().isKinematic=true;
         player.GetComponent<PlayerCombat>().enabled=false;
         player.GetComponent<PlayerCombat>().StopAllCoroutines();

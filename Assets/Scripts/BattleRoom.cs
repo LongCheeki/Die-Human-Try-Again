@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public sealed class BattleRoom : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public sealed class BattleRoom : MonoBehaviour
     public GameObject enemyTemplate;
     public Transform checkpoint;
     public GameObject reward;
+    public GameObject[] clearRewards;
     public RoomState State { get; private set; }
 
     private Vector3[] spawnPositions;
@@ -18,8 +20,28 @@ public sealed class BattleRoom : MonoBehaviour
     private PlayerHealth player;
     private BoxCollider area;
 
+    [ContextMenu("Refresh room enemies")]
+    public void RefreshEnemies()
+    {
+        var collected = new List<EnemyHealth>();
+        if (enemies != null)
+            foreach (var enemy in enemies)
+                if (enemy != null && !collected.Contains(enemy) &&
+                    (enemy.GetComponentInParent<BattleRoom>() == null || enemy.GetComponentInParent<BattleRoom>() == this))
+                    collected.Add(enemy);
+        foreach (var enemy in GetComponentsInChildren<EnemyHealth>(true))
+            if (enemy.GetComponentInParent<BattleRoom>() == this && !collected.Contains(enemy)) collected.Add(enemy);
+        enemies = collected.ToArray();
+    }
+
+    private void OnTransformChildrenChanged()
+    {
+        if (!Application.isPlaying) RefreshEnemies();
+    }
+
     private void Awake()
     {
+        RefreshEnemies();
         area = GetComponent<BoxCollider>();
         spawnPositions = new Vector3[enemies.Length];
         spawnRotations = new Quaternion[enemies.Length];
@@ -32,6 +54,7 @@ public sealed class BattleRoom : MonoBehaviour
             enemies[i].gameObject.SetActive(false);
         }
         if (reward != null) reward.SetActive(false);
+        SetClearRewards(false);
     }
 
     private void Start()
@@ -79,6 +102,13 @@ public sealed class BattleRoom : MonoBehaviour
         entrance.SetOpen(true);
         exit.SetOpen(true);
         if (reward != null) reward.SetActive(true);
+        SetClearRewards(true);
+    }
+
+    private void SetClearRewards(bool visible)
+    {
+        if (clearRewards == null) return;
+        foreach (var item in clearRewards) if (item != null) item.SetActive(visible);
     }
 
     private void ResetEncounter()

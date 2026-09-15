@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
-public static class LevelOneCrossBuilder
+public static partial class LevelOneCrossBuilder
 {
     private static Transform layout;
     private static GameObject rail, pillar, guard, health, gateTemplate;

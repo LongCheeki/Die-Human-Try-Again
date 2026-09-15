@@ -21,6 +21,7 @@ public class PlayerHealth : MonoBehaviour
     [Header("Respawn")]
     public Transform respawnPoint;
     public float respawnDelay = 2f;
+    public bool restartSceneOnDeath;
 
     [Header("References")]
     public Animator slimeAnimator;
@@ -252,6 +253,21 @@ public class PlayerHealth : MonoBehaviour
 
     IEnumerator RespawnCoroutine()
     {
+        if (restartSceneOnDeath)
+        {
+            var combat = GetComponent<PlayerCombat>();
+            if (combat != null)
+            {
+                combat.StopAllCoroutines();
+                combat.enabled = false;
+            }
+            foreach (var sword in GetComponentsInChildren<SwordHitbox>(true)) sword.DisableDamage();
+            if (playerMimic != null) playerMimic.enabled = false;
+            yield return new WaitForSecondsRealtime(respawnDelay);
+            Time.timeScale = 1;
+            UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(gameObject.scene.name);
+            yield break;
+        }
         yield return new WaitForSeconds(
             respawnDelay
         );
