@@ -3,44 +3,100 @@ using UnityEngine.InputSystem;
 
 public class PlayerMimic : MonoBehaviour
 {
+    // =============================
+    // FORMS
+    // =============================
+
     [Header("Forms")]
     public GameObject slimeVisual;
     public GameObject warriorVisual;
+    public GameObject archerVisual;
+
+    // =============================
+    // ANIMATORS
+    // =============================
 
     [Header("Animators")]
     public Animator slimeAnimator;
     public Animator warriorAnimator;
+    public Animator archerAnimator;
+
+    // =============================
+    // WEAPON
+    // =============================
 
     [Header("Weapon")]
     public Transform weaponPivot;
     public Transform slimeWeaponAnchor;
     public Transform warriorWeaponAnchor;
 
+    // =============================
+    // FORM STATS
+    // =============================
+
     [Header("Form Stats")]
     public float slimeMoveSpeedMultiplier = 1f;
     public float warriorMoveSpeedMultiplier = 0.8f;
+    public float archerMoveSpeedMultiplier = 1f;
+
+    // =============================
+    // UNLOCKS
+    // =============================
 
     [Header("Unlocks")]
     public bool warriorUnlocked = false;
+    public bool archerUnlocked = false;
+
+    // =============================
+    // TRANSFORMATION EFFECT
+    // =============================
 
     [Header("Transformation Effect")]
     public GameObject transformEffectPrefab;
     public Transform effectSpawnPoint;
 
+    // =============================
+    // REFERENCES
+    // =============================
+
     [Header("References")]
     public PlayerMovement playerMovement;
 
-    private bool isWarrior = false;
+    // =============================
+    // CURRENT FORM
+    // =============================
+
+    private enum MimicForm
+    {
+        Slime,
+        Warrior,
+        Archer
+    }
+
+    private MimicForm currentForm =
+        MimicForm.Slime;
+
+    // =============================
+    // START
+    // =============================
 
     void Start()
     {
         SetSlimeForm(false);
     }
 
+    // =============================
+    // INPUT
+    // =============================
+
     void Update()
     {
         if (Keyboard.current == null)
             return;
+
+        // =========================
+        // KEY 1 = WARRIOR
+        // =========================
 
         if (Keyboard.current.digit1Key.wasPressedThisFrame)
         {
@@ -53,7 +109,9 @@ public class PlayerMimic : MonoBehaviour
                 return;
             }
 
-            if (isWarrior)
+            // 如果已经是战士
+            // 再按1变回史莱姆
+            if (currentForm == MimicForm.Warrior)
             {
                 SetSlimeForm(true);
             }
@@ -62,10 +120,37 @@ public class PlayerMimic : MonoBehaviour
                 SetWarriorForm(true);
             }
         }
+
+        // =========================
+        // KEY 2 = ARCHER
+        // =========================
+
+        if (Keyboard.current.digit2Key.wasPressedThisFrame)
+        {
+            if (!archerUnlocked)
+            {
+                Debug.Log(
+                    "Archer Form is not unlocked yet."
+                );
+
+                return;
+            }
+
+            // 如果已经是弓箭手
+            // 再按2变回史莱姆
+            if (currentForm == MimicForm.Archer)
+            {
+                SetSlimeForm(true);
+            }
+            else
+            {
+                SetArcherForm(true);
+            }
+        }
     }
 
     // =============================
-    // UNLOCK
+    // UNLOCK WARRIOR
     // =============================
 
     public void UnlockWarrior()
@@ -74,6 +159,19 @@ public class PlayerMimic : MonoBehaviour
 
         Debug.Log(
             "Warrior Form Unlocked!"
+        );
+    }
+
+    // =============================
+    // UNLOCK ARCHER
+    // =============================
+
+    public void UnlockArcher()
+    {
+        archerUnlocked = true;
+
+        Debug.Log(
+            "Archer Form Unlocked!"
         );
     }
 
@@ -92,24 +190,36 @@ public class PlayerMimic : MonoBehaviour
             PlayTransformEffect();
         }
 
-        isWarrior = true;
+        currentForm =
+            MimicForm.Warrior;
 
-        // 先打开战士
+        // 打开战士
         if (warriorVisual != null)
         {
             warriorVisual.SetActive(true);
         }
 
-        // 武器放到战士右手
-        MoveWeaponToAnchor(
-            warriorWeaponAnchor
-        );
-
-        // 关闭史莱姆
+        // 关闭其他形态
         if (slimeVisual != null)
         {
             slimeVisual.SetActive(false);
         }
+
+        if (archerVisual != null)
+        {
+            archerVisual.SetActive(false);
+        }
+
+        // 显示近战武器
+        if (weaponPivot != null)
+        {
+            weaponPivot.gameObject.SetActive(true);
+        }
+
+        // 武器放到战士锚点
+        MoveWeaponToAnchor(
+            warriorWeaponAnchor
+        );
 
         // 修改移动控制
         if (playerMovement != null &&
@@ -120,7 +230,6 @@ public class PlayerMimic : MonoBehaviour
                 warriorAnimator
             );
 
-            // 战士更慢
             playerMovement.SetMoveSpeedMultiplier(
                 warriorMoveSpeedMultiplier
             );
@@ -128,6 +237,66 @@ public class PlayerMimic : MonoBehaviour
 
         Debug.Log(
             "Changed to Warrior Form."
+        );
+    }
+
+    // =============================
+    // ARCHER FORM
+    // =============================
+
+    public void SetArcherForm(
+        bool playEffect = true)
+    {
+        if (!archerUnlocked)
+            return;
+
+        if (playEffect)
+        {
+            PlayTransformEffect();
+        }
+
+        currentForm =
+            MimicForm.Archer;
+
+        // 打开弓箭手
+        if (archerVisual != null)
+        {
+            archerVisual.SetActive(true);
+        }
+
+        // 关闭其他形态
+        if (slimeVisual != null)
+        {
+            slimeVisual.SetActive(false);
+        }
+
+        if (warriorVisual != null)
+        {
+            warriorVisual.SetActive(false);
+        }
+
+        // 弓箭手不用当前近战武器
+        if (weaponPivot != null)
+        {
+            weaponPivot.gameObject.SetActive(false);
+        }
+
+        // 修改移动控制
+        if (playerMovement != null &&
+            archerVisual != null)
+        {
+            playerMovement.SetCurrentVisual(
+                archerVisual.transform,
+                archerAnimator
+            );
+
+            playerMovement.SetMoveSpeedMultiplier(
+                archerMoveSpeedMultiplier
+            );
+        }
+
+        Debug.Log(
+            "Changed to Archer Form."
         );
     }
 
@@ -143,7 +312,8 @@ public class PlayerMimic : MonoBehaviour
             PlayTransformEffect();
         }
 
-        isWarrior = false;
+        currentForm =
+            MimicForm.Slime;
 
         // 打开史莱姆
         if (slimeVisual != null)
@@ -151,16 +321,27 @@ public class PlayerMimic : MonoBehaviour
             slimeVisual.SetActive(true);
         }
 
-        // 武器返回史莱姆
-        MoveWeaponToAnchor(
-            slimeWeaponAnchor
-        );
-
-        // 关闭战士
+        // 关闭其他形态
         if (warriorVisual != null)
         {
             warriorVisual.SetActive(false);
         }
+
+        if (archerVisual != null)
+        {
+            archerVisual.SetActive(false);
+        }
+
+        // 恢复近战武器
+        if (weaponPivot != null)
+        {
+            weaponPivot.gameObject.SetActive(true);
+        }
+
+        // 武器返回史莱姆锚点
+        MoveWeaponToAnchor(
+            slimeWeaponAnchor
+        );
 
         if (playerMovement != null &&
             slimeVisual != null)
@@ -170,7 +351,6 @@ public class PlayerMimic : MonoBehaviour
                 slimeAnimator
             );
 
-            // 恢复正常速度
             playerMovement.SetMoveSpeedMultiplier(
                 slimeMoveSpeedMultiplier
             );
@@ -187,27 +367,40 @@ public class PlayerMimic : MonoBehaviour
 
     public void ReturnToSlimeForDeath()
     {
-        // 本来就是史莱姆就不处理
-        if (!isWarrior)
+        // 如果本来就是史莱姆
+        // 不需要重新切换
+        if (currentForm == MimicForm.Slime)
             return;
 
         PlayTransformEffect();
 
-        isWarrior = false;
+        currentForm =
+            MimicForm.Slime;
 
         if (slimeVisual != null)
         {
             slimeVisual.SetActive(true);
         }
 
-        MoveWeaponToAnchor(
-            slimeWeaponAnchor
-        );
-
         if (warriorVisual != null)
         {
             warriorVisual.SetActive(false);
         }
+
+        if (archerVisual != null)
+        {
+            archerVisual.SetActive(false);
+        }
+
+        // 恢复近战武器
+        if (weaponPivot != null)
+        {
+            weaponPivot.gameObject.SetActive(true);
+        }
+
+        MoveWeaponToAnchor(
+            slimeWeaponAnchor
+        );
 
         if (playerMovement != null &&
             slimeVisual != null)
@@ -223,7 +416,7 @@ public class PlayerMimic : MonoBehaviour
         }
 
         Debug.Log(
-            "Warrior collapsed back into Slime."
+            "Mimic form collapsed back into Slime."
         );
     }
 
@@ -262,17 +455,23 @@ public class PlayerMimic : MonoBehaviour
         Vector3 spawnPosition =
             transform.position;
 
+        Quaternion spawnRotation =
+            Quaternion.identity;
+
         if (effectSpawnPoint != null)
         {
             spawnPosition =
                 effectSpawnPoint.position;
+
+            spawnRotation =
+                effectSpawnPoint.rotation;
         }
 
         GameObject effect =
             Instantiate(
                 transformEffectPrefab,
                 spawnPosition,
-                Quaternion.identity
+                spawnRotation
             );
 
         Destroy(
@@ -287,13 +486,33 @@ public class PlayerMimic : MonoBehaviour
 
     public bool IsWarrior()
     {
-        return isWarrior;
+        return currentForm ==
+               MimicForm.Warrior;
+    }
+
+    public bool IsArcher()
+    {
+        return currentForm ==
+               MimicForm.Archer;
+    }
+
+    public bool IsSlime()
+    {
+        return currentForm ==
+               MimicForm.Slime;
     }
 
     public Animator GetCurrentAnimator()
     {
-        if (isWarrior)
+        if (currentForm == MimicForm.Warrior)
+        {
             return warriorAnimator;
+        }
+
+        if (currentForm == MimicForm.Archer)
+        {
+            return archerAnimator;
+        }
 
         return slimeAnimator;
     }

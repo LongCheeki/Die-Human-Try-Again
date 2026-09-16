@@ -5186,14 +5186,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slimeVisual: {fileID: 4853022}
   warriorVisual: {fileID: 2048045837}
+  archerVisual: {fileID: 0}
   slimeAnimator: {fileID: 1631259447}
   warriorAnimator: {fileID: 2048045838}
+  archerAnimator: {fileID: 0}
   weaponPivot: {fileID: 996679361}
   slimeWeaponAnchor: {fileID: 1535151307}
   warriorWeaponAnchor: {fileID: 191320116}
   slimeMoveSpeedMultiplier: 1
   warriorMoveSpeedMultiplier: 0.5
+  archerMoveSpeedMultiplier: 1
   warriorUnlocked: 0
+  archerUnlocked: 0
   transformEffectPrefab: {fileID: 0}
   effectSpawnPoint: {fileID: 0}
   playerMovement: {fileID: 158002741}
@@ -57049,7 +57053,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   encounter: {fileID: 1158312169}
   gate: {fileID: 1390341210}
-  destinationScene: 
+  destinationScene: Level2
   requireSceneClear: 0
 --- !u!65 &1952205610
 BoxCollider:
