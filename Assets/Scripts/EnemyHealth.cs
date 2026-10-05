@@ -17,6 +17,7 @@ public class EnemyHealth : MonoBehaviour
 
     private Rigidbody rb;
     private EnemyAI enemyAI;
+    private GolelingBossAI bossAI;
 
     private bool isKnockedBack = false;
 
@@ -24,6 +25,7 @@ public class EnemyHealth : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         enemyAI = GetComponent<EnemyAI>();
+        bossAI = GetComponent<GolelingBossAI>();
     }
 
     void Start()
@@ -36,6 +38,7 @@ public class EnemyHealth : MonoBehaviour
         if (currentHealth <= 0)
             return;
 
+        if (bossAI != null) damage *= bossAI.GetIncomingDamageMultiplier();
         currentHealth = Mathf.Max(0f, currentHealth - damage);
         HealthChanged?.Invoke(currentHealth);
 
@@ -48,7 +51,7 @@ public class EnemyHealth : MonoBehaviour
         }
 
         // ¿ªÊ¼»÷ÍË
-        if (knockbackDirection != Vector3.zero)
+        if (knockbackDirection != Vector3.zero && knockbackSpeed > 0f)
             StartCoroutine(KnockbackCoroutine(knockbackDirection));
     }
 

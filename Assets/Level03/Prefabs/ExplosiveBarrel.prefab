@@ -298,6 +298,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blastRadius: 1.1471004
   playerDamage: 2
+  bossDamage: 5
   explosionEffect: {fileID: 1267737832450198513, guid: 5bf95c823b802004d96e400443b68154, type: 3}
 --- !u!1 &4489331621670133050
 GameObject:

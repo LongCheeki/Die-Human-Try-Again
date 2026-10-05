@@ -18,3 +18,10 @@ Source: https://kenney.nl/assets/particle-pack
 License: CC0 1.0
 https://creativecommons.org/publicdomain/zero/1.0/
 Fire, smoke and circle textures combined into the barrel explosion particle prefab.
+
+Goleling Evolved
+Author: Quaternius
+Source: https://poly.pizza/m/iHEuXiH6Aj
+License: CC0 1.0
+https://creativecommons.org/publicdomain/zero/1.0/
+Used with the original skeletal animations as the Level 3 boss.

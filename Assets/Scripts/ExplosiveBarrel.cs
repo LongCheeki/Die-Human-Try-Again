@@ -5,6 +5,7 @@ public sealed class ExplosiveBarrel : MonoBehaviour
 {
     public float blastRadius = 2f;
     public float playerDamage = 2f;
+    public float bossDamage = 5f;
     public GameObject explosionEffect;
     private bool exploded;
     public void Explode(PlayerHealth meleeAttacker = null)
@@ -29,8 +30,13 @@ public sealed class ExplosiveBarrel : MonoBehaviour
             if (player != null && Inside(player, origin)) players.Add(player);
             if (enemy != null && Inside(enemy, origin)) enemies.Add(enemy);
         }
-        foreach (var player in players) player.TakeTrapDamage(playerDamage);
-        foreach (var enemy in enemies) enemy.TakeDamage(float.MaxValue, Vector3.zero);
+        foreach (var player in players)
+        {
+            var mimic = player.GetComponent<PlayerMimic>();
+            player.TakeTrapDamage(mimic != null && mimic.IsWarrior() ? 0.5f : playerDamage);
+        }
+        foreach (var enemy in enemies)
+            enemy.TakeDamage(enemy.GetComponent<GolelingBossAI>() != null ? bossDamage : float.MaxValue, Vector3.zero);
         Destroy(gameObject);
     }
     private bool Inside(Component target, Vector3 origin)

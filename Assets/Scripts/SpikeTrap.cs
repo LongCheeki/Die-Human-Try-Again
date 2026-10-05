@@ -43,7 +43,8 @@ public sealed class SpikeTrap : MonoBehaviour
                 continue;
             }
             elapsed += Time.fixedDeltaTime;
-            float interval = Mathf.Max(0.01f, target is EnemyHealth ? enemyDamageInterval : damageInterval);
+            bool archer = target is EnemyHealth && target.GetComponent<ArcherEnemyAI>() != null;
+            float interval = Mathf.Max(0.01f, archer ? 1f : target is EnemyHealth ? enemyDamageInterval : damageInterval);
             while (elapsed + 0.00001f >= interval && target != null)
             {
                 elapsed -= interval;
@@ -56,6 +57,7 @@ public sealed class SpikeTrap : MonoBehaviour
     private void DealDamage(Component target)
     {
         if (target is PlayerHealth player) player.TakeTrapDamage(damagePerTick);
-        else if (target is EnemyHealth enemy) enemy.TakeDamage(enemyDamagePerTick, Vector3.zero);
+        else if (target is EnemyHealth enemy)
+            enemy.TakeDamage(enemy.GetComponent<ArcherEnemyAI>() != null ? 1f : enemyDamagePerTick, Vector3.zero);
     }
 }

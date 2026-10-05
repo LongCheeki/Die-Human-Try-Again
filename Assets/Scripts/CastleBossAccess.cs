@@ -5,9 +5,11 @@ public sealed class CastleBossAccess : MonoBehaviour
     public CastleCombatRoom[] rooms;
     public RoomGate[] gates;
     public CastleCombatRoom[] gatePrerequisites;
+    public GolelingBossEncounter encounter;
     private void Start() { foreach (var gate in gates) gate.SetOpen(false, true); }
     private void Update()
     {
+        if (encounter != null && (encounter.IsFighting || encounter.IsComplete)) return;
         for (var i = 0; i < gates.Length; i++)
         {
             var gate = gates[i];
