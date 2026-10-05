@@ -29,6 +29,14 @@ public class SwordHitbox : MonoBehaviour
         if (!canDamage)
             return;
 
+        var barrel = other.GetComponentInParent<ExplosiveBarrel>();
+        if (barrel != null)
+        {
+            canDamage = false;
+            barrel.Explode(GetComponentInParent<PlayerHealth>());
+            return;
+        }
+
         EnemyHealth enemyHealth =
             other.GetComponentInParent<EnemyHealth>();
 

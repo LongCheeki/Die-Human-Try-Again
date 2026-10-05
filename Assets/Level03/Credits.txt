@@ -1,0 +1,20 @@
+Hand Painted Stone Floor Texture
+Author: KayRae Gaming / Kaylia (MsKayRae)
+Source: https://opengameart.org/content/hand-painted-stone-floor-texture
+License: Creative Commons Attribution 4.0
+https://creativecommons.org/licenses/by/4.0/
+Used as the Level 3 floor, with reduced normal strength and tiled UVs.
+
+Exploding Barrel
+Author: Quaternius
+Source: https://poly.pizza/m/1orHe0kCc1
+License: CC0 1.0
+https://creativecommons.org/publicdomain/zero/1.0/
+Converted from GLB to Unity mesh assets and fitted with a red warning band.
+
+Particle Pack
+Author: Kenney
+Source: https://kenney.nl/assets/particle-pack
+License: CC0 1.0
+https://creativecommons.org/publicdomain/zero/1.0/
+Fire, smoke and circle textures combined into the barrel explosion particle prefab.

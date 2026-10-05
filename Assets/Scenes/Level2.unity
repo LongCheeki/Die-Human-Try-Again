@@ -768,7 +768,7 @@ GameObject:
   - component: {fileID: 19909408}
   - component: {fileID: 19909407}
   m_Layer: 0
-  m_Name: Level 01 portal trigger
+  m_Name: Exit to Level 03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -803,7 +803,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   encounter: {fileID: 0}
   gate: {fileID: 1547581218}
-  destinationScene: Level01_Castle
+  destinationScene: Level03_Castle
   requireSceneClear: 1
 --- !u!65 &19909408
 BoxCollider:

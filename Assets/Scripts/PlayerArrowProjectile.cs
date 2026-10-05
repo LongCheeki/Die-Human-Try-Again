@@ -39,6 +39,14 @@ public class PlayerArrowProjectile : MonoBehaviour
         if (other.CompareTag("Player"))
             return;
 
+        var barrel = other.GetComponentInParent<ExplosiveBarrel>();
+        if (barrel != null)
+        {
+            barrel.Explode();
+            Destroy(gameObject);
+            return;
+        }
+
         EnemyHealth enemyHealth =
             other.GetComponentInParent<EnemyHealth>();
 
