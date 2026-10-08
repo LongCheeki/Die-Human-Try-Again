@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 public sealed class LevelExit : MonoBehaviour
 {
     public BossEncounter encounter;
+    public GolelingBossEncounter golelingEncounter;
     public RoomGate gate;
     public string destinationScene = "";
     public bool requireSceneClear;
@@ -24,7 +25,8 @@ public sealed class LevelExit : MonoBehaviour
 
     private bool CanUnlock()
     {
-        if (!requireSceneClear) return encounter != null && encounter.IsComplete;
+        if (!requireSceneClear)
+            return golelingEncounter != null ? golelingEncounter.IsComplete : encounter != null && encounter.IsComplete;
         foreach (var enemy in FindObjectsByType<EnemyHealth>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             if (enemy.gameObject.scene == gameObject.scene) return false;
         return true;
