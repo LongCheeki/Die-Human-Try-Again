@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e83707caf42c6426ebb8e584516b8896
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 411742
+  packageName: Medieval Characters Pack Lite
+  packageVersion: 1.0
+  assetPath: Assets/MedievalCharactersPack/Materials/URP/Mat_Trim.mat
+  uploadId: 1012742

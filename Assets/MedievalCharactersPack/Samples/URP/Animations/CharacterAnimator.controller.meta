@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 69d5d13cff89346d8b2a398bd74a6268
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 411742
+  packageName: Medieval Characters Pack Lite
+  packageVersion: 1.0
+  assetPath: Assets/MedievalCharactersPack/Samples/URP/Animations/CharacterAnimator.controller
+  uploadId: 1012742

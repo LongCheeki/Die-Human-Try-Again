@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c90813a268a1f425fa1a843291a85bbc
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 411742
+  packageName: Medieval Characters Pack Lite
+  packageVersion: 1.0
+  assetPath: Assets/MedievalCharactersPack/Materials/URP/Mat_SkinPale.mat
+  uploadId: 1012742

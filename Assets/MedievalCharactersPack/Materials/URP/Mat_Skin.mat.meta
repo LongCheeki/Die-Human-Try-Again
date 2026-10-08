@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 79645d844aae64812ab96d8b26faf0b3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 411742
+  packageName: Medieval Characters Pack Lite
+  packageVersion: 1.0
+  assetPath: Assets/MedievalCharactersPack/Materials/URP/Mat_Skin.mat
+  uploadId: 1012742

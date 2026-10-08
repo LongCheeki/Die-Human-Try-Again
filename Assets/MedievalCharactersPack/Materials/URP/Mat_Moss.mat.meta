@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5fc9360cad603489b8505e6a2fb92256
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 411742
+  packageName: Medieval Characters Pack Lite
+  packageVersion: 1.0
+  assetPath: Assets/MedievalCharactersPack/Materials/URP/Mat_Moss.mat
+  uploadId: 1012742

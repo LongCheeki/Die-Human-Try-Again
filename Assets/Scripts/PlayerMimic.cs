@@ -11,6 +11,7 @@ public class PlayerMimic : MonoBehaviour
     public GameObject slimeVisual;
     public GameObject warriorVisual;
     public GameObject archerVisual;
+    public GameObject mageVisual;
 
     // =============================
     // ANIMATORS
@@ -20,6 +21,7 @@ public class PlayerMimic : MonoBehaviour
     public Animator slimeAnimator;
     public Animator warriorAnimator;
     public Animator archerAnimator;
+    public Animator mageAnimator;
 
     // =============================
     // WEAPON
@@ -38,6 +40,7 @@ public class PlayerMimic : MonoBehaviour
     public float slimeMoveSpeedMultiplier = 1f;
     public float warriorMoveSpeedMultiplier = 0.8f;
     public float archerMoveSpeedMultiplier = 1f;
+    public float mageMoveSpeedMultiplier = 0.9f;
 
     // =============================
     // UNLOCKS
@@ -46,6 +49,7 @@ public class PlayerMimic : MonoBehaviour
     [Header("Unlocks")]
     public bool warriorUnlocked = false;
     public bool archerUnlocked = false;
+    public bool mageUnlocked = false;
 
     // =============================
     // TRANSFORMATION EFFECT
@@ -70,7 +74,8 @@ public class PlayerMimic : MonoBehaviour
     {
         Slime,
         Warrior,
-        Archer
+        Archer,
+        Mage
     }
 
     private MimicForm currentForm =
@@ -109,8 +114,6 @@ public class PlayerMimic : MonoBehaviour
                 return;
             }
 
-            // 如果已经是战士
-            // 再按1变回史莱姆
             if (currentForm == MimicForm.Warrior)
             {
                 SetSlimeForm(true);
@@ -136,8 +139,6 @@ public class PlayerMimic : MonoBehaviour
                 return;
             }
 
-            // 如果已经是弓箭手
-            // 再按2变回史莱姆
             if (currentForm == MimicForm.Archer)
             {
                 SetSlimeForm(true);
@@ -145,6 +146,31 @@ public class PlayerMimic : MonoBehaviour
             else
             {
                 SetArcherForm(true);
+            }
+        }
+
+        // =========================
+        // KEY 3 = MAGE
+        // =========================
+
+        if (Keyboard.current.digit3Key.wasPressedThisFrame)
+        {
+            if (!mageUnlocked)
+            {
+                Debug.Log(
+                    "Mage Form is not unlocked yet."
+                );
+
+                return;
+            }
+
+            if (currentForm == MimicForm.Mage)
+            {
+                SetSlimeForm(true);
+            }
+            else
+            {
+                SetMageForm(true);
             }
         }
     }
@@ -172,6 +198,19 @@ public class PlayerMimic : MonoBehaviour
 
         Debug.Log(
             "Archer Form Unlocked!"
+        );
+    }
+
+    // =============================
+    // UNLOCK MAGE
+    // =============================
+
+    public void UnlockMage()
+    {
+        mageUnlocked = true;
+
+        Debug.Log(
+            "Mage Form Unlocked!"
         );
     }
 
@@ -210,6 +249,11 @@ public class PlayerMimic : MonoBehaviour
             archerVisual.SetActive(false);
         }
 
+        if (mageVisual != null)
+        {
+            mageVisual.SetActive(false);
+        }
+
         // 显示近战武器
         if (weaponPivot != null)
         {
@@ -221,7 +265,6 @@ public class PlayerMimic : MonoBehaviour
             warriorWeaponAnchor
         );
 
-        // 修改移动控制
         if (playerMovement != null &&
             warriorVisual != null)
         {
@@ -275,13 +318,17 @@ public class PlayerMimic : MonoBehaviour
             warriorVisual.SetActive(false);
         }
 
-        // 弓箭手不用当前近战武器
+        if (mageVisual != null)
+        {
+            mageVisual.SetActive(false);
+        }
+
+        // 弓箭手不使用近战武器
         if (weaponPivot != null)
         {
             weaponPivot.gameObject.SetActive(false);
         }
 
-        // 修改移动控制
         if (playerMovement != null &&
             archerVisual != null)
         {
@@ -297,6 +344,70 @@ public class PlayerMimic : MonoBehaviour
 
         Debug.Log(
             "Changed to Archer Form."
+        );
+    }
+
+    // =============================
+    // MAGE FORM
+    // =============================
+
+    public void SetMageForm(
+        bool playEffect = true)
+    {
+        if (!mageUnlocked)
+            return;
+
+        if (playEffect)
+        {
+            PlayTransformEffect();
+        }
+
+        currentForm =
+            MimicForm.Mage;
+
+        // 打开法师
+        if (mageVisual != null)
+        {
+            mageVisual.SetActive(true);
+        }
+
+        // 关闭其他形态
+        if (slimeVisual != null)
+        {
+            slimeVisual.SetActive(false);
+        }
+
+        if (warriorVisual != null)
+        {
+            warriorVisual.SetActive(false);
+        }
+
+        if (archerVisual != null)
+        {
+            archerVisual.SetActive(false);
+        }
+
+        // 法师不显示近战武器
+        if (weaponPivot != null)
+        {
+            weaponPivot.gameObject.SetActive(false);
+        }
+
+        if (playerMovement != null &&
+            mageVisual != null)
+        {
+            playerMovement.SetCurrentVisual(
+                mageVisual.transform,
+                mageAnimator
+            );
+
+            playerMovement.SetMoveSpeedMultiplier(
+                mageMoveSpeedMultiplier
+            );
+        }
+
+        Debug.Log(
+            "Changed to Mage Form."
         );
     }
 
@@ -330,6 +441,11 @@ public class PlayerMimic : MonoBehaviour
         if (archerVisual != null)
         {
             archerVisual.SetActive(false);
+        }
+
+        if (mageVisual != null)
+        {
+            mageVisual.SetActive(false);
         }
 
         // 恢复近战武器
@@ -367,8 +483,6 @@ public class PlayerMimic : MonoBehaviour
 
     public void ReturnToSlimeForDeath()
     {
-        // 如果本来就是史莱姆
-        // 不需要重新切换
         if (currentForm == MimicForm.Slime)
             return;
 
@@ -390,6 +504,11 @@ public class PlayerMimic : MonoBehaviour
         if (archerVisual != null)
         {
             archerVisual.SetActive(false);
+        }
+
+        if (mageVisual != null)
+        {
+            mageVisual.SetActive(false);
         }
 
         // 恢复近战武器
@@ -496,6 +615,12 @@ public class PlayerMimic : MonoBehaviour
                MimicForm.Archer;
     }
 
+    public bool IsMage()
+    {
+        return currentForm ==
+               MimicForm.Mage;
+    }
+
     public bool IsSlime()
     {
         return currentForm ==
@@ -512,6 +637,11 @@ public class PlayerMimic : MonoBehaviour
         if (currentForm == MimicForm.Archer)
         {
             return archerAnimator;
+        }
+
+        if (currentForm == MimicForm.Mage)
+        {
+            return mageAnimator;
         }
 
         return slimeAnimator;

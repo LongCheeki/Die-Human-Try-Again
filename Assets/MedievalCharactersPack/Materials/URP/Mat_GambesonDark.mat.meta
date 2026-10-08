@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 69b5715a5b32d48ffb4189505ff11f45
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 411742
+  packageName: Medieval Characters Pack Lite
+  packageVersion: 1.0
+  assetPath: Assets/MedievalCharactersPack/Materials/URP/Mat_GambesonDark.mat
+  uploadId: 1012742

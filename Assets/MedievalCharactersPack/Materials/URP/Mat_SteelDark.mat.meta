@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c805db301b3a14b5c9c6c9c792f48946
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 411742
+  packageName: Medieval Characters Pack Lite
+  packageVersion: 1.0
+  assetPath: Assets/MedievalCharactersPack/Materials/URP/Mat_SteelDark.mat
+  uploadId: 1012742

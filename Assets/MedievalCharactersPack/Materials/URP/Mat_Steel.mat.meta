@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 760ca0f58d4de4e229a397b7ff83fdfe
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 411742
+  packageName: Medieval Characters Pack Lite
+  packageVersion: 1.0
+  assetPath: Assets/MedievalCharactersPack/Materials/URP/Mat_Steel.mat
+  uploadId: 1012742

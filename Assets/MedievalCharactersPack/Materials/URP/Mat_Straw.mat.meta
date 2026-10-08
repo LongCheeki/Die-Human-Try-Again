@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e67fb3f2ed7d1432a9b5b82cabc8ecf7
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 411742
+  packageName: Medieval Characters Pack Lite
+  packageVersion: 1.0
+  assetPath: Assets/MedievalCharactersPack/Materials/URP/Mat_Straw.mat
+  uploadId: 1012742
