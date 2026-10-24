@@ -397,6 +397,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 1924819454}
   animator: {fileID: 1924819456}
 --- !u!114 &10381909
@@ -1793,6 +1797,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 475723203}
   animator: {fileID: 475723205}
 --- !u!114 &59593372
@@ -3704,6 +3712,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 1095607426}
   animator: {fileID: 1095607428}
 --- !u!114 &107383430
@@ -5187,17 +5199,21 @@ MonoBehaviour:
   slimeVisual: {fileID: 4853022}
   warriorVisual: {fileID: 2048045837}
   archerVisual: {fileID: 0}
+  mageVisual: {fileID: 0}
   slimeAnimator: {fileID: 1631259447}
   warriorAnimator: {fileID: 2048045838}
   archerAnimator: {fileID: 0}
+  mageAnimator: {fileID: 0}
   weaponPivot: {fileID: 996679361}
   slimeWeaponAnchor: {fileID: 1535151307}
   warriorWeaponAnchor: {fileID: 191320116}
   slimeMoveSpeedMultiplier: 1
   warriorMoveSpeedMultiplier: 0.5
   archerMoveSpeedMultiplier: 1
+  mageMoveSpeedMultiplier: 0.9
   warriorUnlocked: 0
   archerUnlocked: 0
+  mageUnlocked: 0
   transformEffectPrefab: {fileID: 0}
   effectSpawnPoint: {fileID: 0}
   playerMovement: {fileID: 158002741}
@@ -8423,6 +8439,7 @@ GameObject:
   - component: {fileID: 259350348}
   - component: {fileID: 259350346}
   - component: {fileID: 259350347}
+  - component: {fileID: 259350350}
   m_Layer: 0
   m_Name: Castle Warden - Boss
   m_TagString: Untagged
@@ -8464,6 +8481,10 @@ MonoBehaviour:
   attackRange: 2.3
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 1732549980}
   animator: {fileID: 1732549982}
 --- !u!114 &259350347
@@ -8531,6 +8552,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 2
+--- !u!114 &259350350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 259350344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c770b9dd3725bf941a77ddce4807c536, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rechargeDelay: 9
+  effectPrefab: {fileID: 600467837431371200, guid: 3dc6f0a2fa3643b41b91a51d17a4cb8b, type: 3}
 --- !u!1 &259388505
 GameObject:
   m_ObjectHideFlags: 0
@@ -11258,6 +11293,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 1859007800}
   animator: {fileID: 1859007798}
 --- !u!136 &375052563
@@ -15292,6 +15331,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 1235739500}
   animator: {fileID: 1235739502}
 --- !u!114 &526966968
@@ -25620,6 +25663,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 708325839}
   animator: {fileID: 708325841}
 --- !u!114 &910392095
@@ -25979,6 +26026,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 855436959}
   animator: {fileID: 855436961}
 --- !u!114 &923999755
@@ -27670,6 +27721,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 454997401}
   animator: {fileID: 454997403}
 --- !u!114 &990572150
@@ -27877,6 +27932,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 137854452}
   animator: {fileID: 137854454}
 --- !u!114 &993923352
@@ -30068,6 +30127,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 76691660}
   animator: {fileID: 76691662}
 --- !u!114 &1065044221
@@ -32140,6 +32203,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 1752001155}
   animator: {fileID: 1752001157}
 --- !u!114 &1135718965
@@ -32787,6 +32854,7 @@ MonoBehaviour:
   checkpoint: {fileID: 2021922597}
   victory: {fileID: 1324595736}
   circleInterval: 5
+  shieldSummonInterval: 6
 --- !u!65 &1158312170
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -33615,6 +33683,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 798875220}
   animator: {fileID: 798875222}
 --- !u!114 &1189004737
@@ -44741,6 +44813,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 1627918528}
   animator: {fileID: 1627918530}
 --- !u!114 &1542718877
@@ -45887,6 +45963,7 @@ Transform:
   - {fileID: 1028053640}
   - {fileID: 1055622593}
   - {fileID: 1726586948}
+  - {fileID: 1640572470}
   m_Father: {fileID: 1014582254}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1583385154
@@ -45934,7 +46011,8 @@ MonoBehaviour:
   enemyTemplate: {fileID: 375052560}
   checkpoint: {fileID: 1484786507}
   reward: {fileID: 1533260462}
-  clearRewards: []
+  clearRewards:
+  - {fileID: 1640572469}
 --- !u!1 &1583855268
 GameObject:
   m_ObjectHideFlags: 0
@@ -47439,12 +47517,12 @@ Transform:
   m_GameObject: {fileID: 1640572469}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.4, z: 3.2}
+  m_LocalPosition: {x: 0, y: 0.4, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2023843463}
-  m_Father: {fileID: 2124058358}
+  m_Father: {fileID: 1583385153}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1640572471
 MonoBehaviour:
@@ -49219,6 +49297,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 247179406}
   animator: {fileID: 247179408}
 --- !u!114 &1694210795
@@ -53177,6 +53259,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 89689389}
   animator: {fileID: 89689391}
 --- !u!114 &1821609876
@@ -57052,6 +57138,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   encounter: {fileID: 1158312169}
+  golelingEncounter: {fileID: 0}
+  requiredBoss: {fileID: 0}
   gate: {fileID: 1390341210}
   destinationScene: Level2
   requireSceneClear: 0
@@ -60044,6 +60132,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 2080464705}
   animator: {fileID: 2080464707}
 --- !u!114 &2070355549
@@ -60572,7 +60664,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slimeDamage: 1
-  warriorDamage: 2
+  warriorDamage: 5
   damageBonus: 0
   playerMimic: {fileID: 158002744}
 --- !u!1 &2096291784
@@ -61568,7 +61660,6 @@ Transform:
   - {fileID: 990596398}
   - {fileID: 806880354}
   - {fileID: 186648329}
-  - {fileID: 1640572470}
   m_Father: {fileID: 1014582254}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &2124058359
@@ -61615,8 +61706,7 @@ MonoBehaviour:
   enemyTemplate: {fileID: 375052560}
   checkpoint: {fileID: 1915213402}
   reward: {fileID: 770690533}
-  clearRewards:
-  - {fileID: 1640572469}
+  clearRewards: []
 --- !u!1 &2124740375
 GameObject:
   m_ObjectHideFlags: 0

@@ -323,6 +323,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   encounter: {fileID: 0}
   golelingEncounter: {fileID: 1446486562}
+  requiredBoss: {fileID: 0}
   gate: {fileID: 1515525874}
   destinationScene: Level 4
   requireSceneClear: 0
@@ -29933,7 +29934,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slimeDamage: 1
-  warriorDamage: 2
+  warriorDamage: 5
   damageBonus: 0
   playerMimic: {fileID: 1059305265}
 --- !u!65 &676155049

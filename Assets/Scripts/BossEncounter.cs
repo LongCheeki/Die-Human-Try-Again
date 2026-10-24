@@ -13,6 +13,7 @@ public sealed class BossEncounter : MonoBehaviour
     public Transform checkpoint;
     public LevelVictory victory;
     public float circleInterval = 5f;
+    public float shieldSummonInterval = 6f;
     public bool IsFighting { get; private set; }
     public bool IsComplete { get; private set; }
     public int SummonedCount { get; private set; }
@@ -24,6 +25,8 @@ public sealed class BossEncounter : MonoBehaviour
     private float nextCircle;
     private int nextThreshold;
     private BoxCollider area;
+    private float nextShieldSummon;
+    private bool shieldWasActive;
 
     private void Awake()
     {
@@ -49,6 +52,8 @@ public sealed class BossEncounter : MonoBehaviour
         SummonedCount = 0;
         nextThreshold = 1;
         nextCircle = Time.time + circleInterval;
+        nextShieldSummon = Time.time + shieldSummonInterval;
+        shieldWasActive = boss.GetComponent<BossShield>() != null;
         boss.HealthChanged += OnBossDamage;
         boss.Died += OnBossDeath;
         boss.GetComponent<EnemyAI>().player = player.transform;
@@ -60,6 +65,18 @@ public sealed class BossEncounter : MonoBehaviour
     {
         if (!IsFighting) return;
         if (player == null || player.GetCurrentHealth() <= 0) { ResetEncounter(); return; }
+        var shield = boss.GetComponent<BossShield>();
+        if (shield != null && shield.HasShield)
+        {
+            if (!shieldWasActive) nextShieldSummon = Time.time + shieldSummonInterval;
+            shieldWasActive = true;
+            if (Time.time >= nextShieldSummon)
+            {
+                nextShieldSummon = Time.time + shieldSummonInterval;
+                SummonNearBoss();
+            }
+        }
+        else shieldWasActive = false;
         if (Time.time >= nextCircle)
         {
             nextCircle = Time.time + circleInterval;
@@ -68,6 +85,26 @@ public sealed class BossEncounter : MonoBehaviour
             var circle = Instantiate(circlePrefab, point, Quaternion.identity, transform);
             circle.Initialize(player, this);
             circles.Add(circle.gameObject);
+        }
+    }
+
+    private void SummonNearBoss()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            float angle = (SummonedCount * 137.5f + i * 45f) * Mathf.Deg2Rad;
+            var position = boss.transform.position + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * 2.5f;
+            position.y = bossSpawn.y;
+            if (!area.bounds.Contains(position) ||
+                Physics.CheckSphere(position + Vector3.up * 0.35f, 0.45f, ~0, QueryTriggerInteraction.Ignore)) continue;
+            var minion = Instantiate(minionTemplate, position, Quaternion.identity, transform);
+            minion.name = "Shield reinforcement " + (SummonedCount + 1);
+            minion.GetComponent<EnemyAI>().player = player.transform;
+            minion.GetComponent<EnemyAI>().detectionRange = 40;
+            minions.Add(minion);
+            minion.SetActive(true);
+            SummonedCount++;
+            return;
         }
     }
 

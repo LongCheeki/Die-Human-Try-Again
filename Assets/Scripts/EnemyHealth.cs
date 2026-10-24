@@ -33,10 +33,13 @@ public class EnemyHealth : MonoBehaviour
         currentHealth = maxHealth;
     }
 
-    public void TakeDamage(float damage, Vector3 knockbackDirection)
+    public void TakeDamage(float damage, Vector3 knockbackDirection, PlayerMimic attacker = null)
     {
         if (currentHealth <= 0)
             return;
+
+        var shield = GetComponent<BossShield>();
+        if (shield != null && shield.AbsorbHit(attacker)) return;
 
         if (bossAI != null) damage *= bossAI.GetIncomingDamageMultiplier();
         currentHealth = Mathf.Max(0f, currentHealth - damage);

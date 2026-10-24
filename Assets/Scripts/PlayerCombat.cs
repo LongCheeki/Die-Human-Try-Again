@@ -74,84 +74,75 @@ public class PlayerCombat : MonoBehaviour
     {
         isAttacking = true;
         canAttack = false;
+        bool warrior = playerMimic != null && playerMimic.IsWarrior();
+        if (swordHitbox != null) swordHitbox.DisableDamage();
+        if (warrior)
+        {
+            if (warriorAnimator == null)
+            {
+                isAttacking = false;
+                canAttack = true;
+                yield break;
+            }
+            warriorAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            warriorAnimator.SetTrigger("Attack");
+            float timeout = 2f;
+            while (timeout > 0f && playerMimic.IsWarrior() &&
+                (health == null || health.GetCurrentHealth() > 0f))
+            {
+                var state = warriorAnimator.GetCurrentAnimatorStateInfo(0);
+                if (state.IsName("infantry_04_attack_A") && state.normalizedTime >= 0.23f) break;
+                timeout -= Time.deltaTime;
+                yield return null;
+            }
+            var ready = warriorAnimator.GetCurrentAnimatorStateInfo(0);
+            if (timeout <= 0f || !playerMimic.IsWarrior() ||
+                (health != null && health.GetCurrentHealth() <= 0f) ||
+                !ready.IsName("infantry_04_attack_A") || ready.normalizedTime >= 0.43f)
+            {
+                isAttacking = false;
+                canAttack = true;
+                yield break;
+            }
+        }
+
         sfx.Attack();
-
-        // 如果当前是战士形态
-        // 播放战士攻击动画
-        if (playerMimic != null &&
-            playerMimic.IsWarrior())
-        {
-            if (warriorAnimator != null)
-            {
-                warriorAnimator.SetTrigger(
-                    "Attack"
-                );
-            }
-        }
-
-        // 开启当前武器伤害
-        if (swordHitbox != null)
-        {
-            swordHitbox.EnableDamage();
-        }
-
+        if (swordHitbox != null) swordHitbox.EnableDamage();
         float timer = 0f;
-
-        while (timer < attackDuration)
+        while (health == null || health.GetCurrentHealth() > 0f)
         {
-            timer += Time.deltaTime;
-
-            float t =
-                timer / attackDuration;
-
-            float angle =
-                Mathf.Lerp(
-                    startAngle,
-                    endAngle,
-                    t
-                );
-
-            if (weaponPivot != null)
+            float progress;
+            if (warrior)
             {
-                weaponPivot.localRotation =
-                    originalRotation *
-                    Quaternion.Euler(
-                        0f,
-                        0f,
-                        angle
-                    );
+                if (!playerMimic.IsWarrior()) break;
+                var state = warriorAnimator.GetCurrentAnimatorStateInfo(0);
+                if (!state.IsName("infantry_04_attack_A") || state.normalizedTime >= 0.43f) break;
+                progress = Mathf.InverseLerp(0.23f, 0.43f, state.normalizedTime);
             }
-
+            else
+            {
+                if (timer >= attackDuration) break;
+                timer += Time.deltaTime;
+                progress = timer / attackDuration;
+            }
+            if (weaponPivot != null)
+                weaponPivot.localRotation = originalRotation *
+                    Quaternion.Euler(0f, 0f, Mathf.Lerp(startAngle, endAngle, progress));
             yield return null;
         }
-
-        // 攻击结束
-        // 武器回到原来的角度
-        if (weaponPivot != null)
-        {
-            weaponPivot.localRotation =
-                originalRotation;
-        }
-
-        // 关闭伤害
-        if (swordHitbox != null)
-        {
-            swordHitbox.DisableDamage();
-        }
-
+        if (swordHitbox != null) swordHitbox.DisableDamage();
+        if (weaponPivot != null) weaponPivot.localRotation = originalRotation;
+        if (warrior)
+            while (playerMimic.IsWarrior() && (health == null || health.GetCurrentHealth() > 0f))
+            {
+                var state = warriorAnimator.GetCurrentAnimatorStateInfo(0);
+                if (!state.IsName("infantry_04_attack_A") || state.normalizedTime >= 0.9f) break;
+                yield return null;
+            }
         isAttacking = false;
-
-        yield return new WaitForSeconds(
-            attackCooldown
-        );
-
+        yield return new WaitForSeconds(attackCooldown);
         canAttack = true;
     }
-
-    // =========================
-    // CHANGE WEAPON
-    // =========================
-
     public void SetWeapon(
         Transform newWeapon,
         SwordHitbox newHitbox)

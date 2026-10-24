@@ -122,6 +122,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slimeDamage: 1
-  warriorDamage: 2
+  warriorDamage: 5
   damageBonus: 0
   playerMimic: {fileID: 0}

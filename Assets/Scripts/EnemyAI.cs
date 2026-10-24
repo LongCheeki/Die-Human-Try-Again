@@ -15,6 +15,10 @@ public class EnemyAI : MonoBehaviour
     public float attackRange = 1.5f;
     public float attackCooldown = 1.2f;
     public float attackDamage = 1f;
+    public float attackRecovery = 0.8f;
+    public bool directionalMelee;
+    public float meleeReach = 1.15f;
+    [Range(0f, 180f)] public float meleeHalfAngle = 50f;
 
     [Header("References")]
     public Transform visual;
@@ -28,16 +32,21 @@ public class EnemyAI : MonoBehaviour
     private bool isAttacking = false;
 
     private float attackTimer = 0f;
+    private BossShield shield;
+    private bool shieldHeld;
+    private bool hitThisAttack;
 
     void Awake()
     {
         sfx = CharacterSfx.Get(gameObject);
+        shield = GetComponent<BossShield>();
         rb =
             GetComponent<Rigidbody>();
     }
 
     void Start()
     {
+        ConfigureSwordMelee();
         if (player != null)
         {
             playerHealth =
@@ -46,9 +55,32 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    private void ConfigureSwordMelee()
+    {
+        if (animator == null) return;
+        foreach (var renderer in animator.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+        {
+            if (renderer.sharedMesh == null || renderer.sharedMesh.name != "WK_HeavyIntantry") continue;
+            directionalMelee = true;
+            var scale = renderer.transform.lossyScale;
+            meleeReach = Mathf.Max(0.3f, 1.35f * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.z)));
+            meleeHalfAngle = 50f;
+            attackRange = meleeReach + 0.25f;
+            attackRecovery = 1.05f;
+            if (animator.runtimeAnimatorController != null)
+                foreach (var clip in animator.runtimeAnimatorController.animationClips)
+                    if (clip.name == "WK_heavy_infantry_08_attack_B")
+                    {
+                        attackRecovery = clip.length / Mathf.Max(0.1f, animator.speed) + 0.05f;
+                        break;
+                    }
+            return;
+        }
+    }
     void Update()
     {
         if (Time.timeScale == 0f) return;
+        if (HoldForShield()) return;
         if (player == null)
             return;
 
@@ -83,6 +115,7 @@ public class EnemyAI : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (shield != null && shield.HasShield) { StopMoving(); return; }
         if (player == null)
             return;
 
@@ -193,6 +226,7 @@ public class EnemyAI : MonoBehaviour
     void AttackPlayer()
     {
         isAttacking = true;
+        hitThisAttack = false;
         sfx.EnemyAttack();
 
         attackTimer =
@@ -220,7 +254,7 @@ public class EnemyAI : MonoBehaviour
 
         Invoke(
             nameof(FinishAttack),
-            0.8f
+            attackRecovery
         );
     }
 
@@ -230,18 +264,14 @@ public class EnemyAI : MonoBehaviour
 
     public void DealDamage()
     {
+        if (shield != null && shield.HasShield) return;
         if (player == null ||
             playerHealth == null)
             return;
 
-        float distance =
-            Vector3.Distance(
-                transform.position,
-                player.position
-            );
-
-        if (distance <=
-            attackRange + 0.3f)
+        if (directionalMelee && (!isAttacking || hitThisAttack)) return;
+        float distance = Vector3.Distance(transform.position, player.position);
+        if (directionalMelee ? CanHitPlayer() : distance <= attackRange + 0.3f)
         {
             // Enemy -> Player
             Vector3 knockbackDirection =
@@ -251,6 +281,7 @@ public class EnemyAI : MonoBehaviour
             knockbackDirection.y =
                 0f;
 
+            hitThisAttack = true;
             playerHealth.TakeDamage(
                 attackDamage,
                 knockbackDirection
@@ -268,6 +299,24 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    private bool CanHitPlayer()
+    {
+        var direction = player.position - transform.position;
+        if (Mathf.Abs(direction.y) > 1.5f) return false;
+        direction.y = 0f;
+        var forward = visual != null ? visual.forward : transform.forward;
+        forward.y = 0f;
+        if (direction.sqrMagnitude > 0.0001f && Vector3.Angle(forward, direction) > meleeHalfAngle)
+            return false;
+        foreach (var collider in playerHealth.GetComponentsInChildren<Collider>())
+        {
+            if (!collider.enabled || collider.isTrigger) continue;
+            var distance = collider.ClosestPoint(transform.position) - transform.position;
+            distance.y = 0f;
+            if (distance.sqrMagnitude <= meleeReach * meleeReach) return true;
+        }
+        return false;
+    }
     void FinishAttack()
     {
         isAttacking =
@@ -278,6 +327,28 @@ public class EnemyAI : MonoBehaviour
     // ANIMATION
     // =============================
 
+    private bool HoldForShield()
+    {
+        if (shield == null || !shield.HasShield)
+        {
+            shieldHeld = false;
+            return false;
+        }
+        isChasing = false;
+        isAttacking = false;
+        CancelInvoke(nameof(FinishAttack));
+        StopMoving();
+        if (animator != null)
+        {
+            animator.ResetTrigger("Attack");
+            animator.SetBool("IsMoving", false);
+            int idle = Animator.StringToHash("WK_heavy_infantry_05_combat_idle");
+            if (!shieldHeld && animator.HasState(0, idle))
+                animator.CrossFadeInFixedTime(idle, 0.1f);
+        }
+        shieldHeld = true;
+        return true;
+    }
     void UpdateAnimation()
     {
         if (animator == null ||

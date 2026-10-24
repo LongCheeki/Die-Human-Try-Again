@@ -4141,7 +4141,7 @@ MonoBehaviour:
   knockbackDuration: 0.2
   respawnPoint: {fileID: 999224314}
   respawnDelay: 2
-  restartSceneOnDeath: 0
+  restartSceneOnDeath: 1
   slimeAnimator: {fileID: 1631259447}
   playerMovement: {fileID: 158002741}
   playerMimic: {fileID: 158002744}
@@ -58311,7 +58311,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slimeDamage: 1
-  warriorDamage: 2
+  warriorDamage: 5
   damageBonus: 0
   playerMimic: {fileID: 158002744}
 --- !u!1 &2087686987

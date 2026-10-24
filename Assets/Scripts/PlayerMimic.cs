@@ -543,6 +543,28 @@ public class PlayerMimic : MonoBehaviour
     // WEAPON
     // =============================
 
+    private Transform warriorSword;
+    private Vector3 originalWarriorSwordScale;
+
+    public void RefreshWeaponVisibility()
+    {
+        if (warriorSword == null && warriorVisual != null)
+            foreach (var mesh in warriorVisual.GetComponentsInChildren<MeshFilter>(true))
+                if (mesh.name.IndexOf("sword", System.StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    warriorSword = mesh.transform;
+                    originalWarriorSwordScale = warriorSword.localScale;
+                    break;
+                }
+        if (warriorSword != null)
+            warriorSword.localScale = Vector3.Scale(originalWarriorSwordScale, new Vector3(1.4f, 1f, 1f));
+        if (weaponPivot == null) return;
+        bool visible = currentForm == MimicForm.Slime;
+        foreach (var visual in weaponPivot.GetComponentsInChildren<Renderer>(true))
+            visual.enabled = visible;
+        foreach (var hitbox in weaponPivot.GetComponentsInChildren<SwordHitbox>(true))
+            hitbox.SetWarriorRange(IsWarrior());
+    }
     void MoveWeaponToAnchor(
         Transform newAnchor)
     {
@@ -560,6 +582,8 @@ public class PlayerMimic : MonoBehaviour
 
         weaponPivot.localRotation =
             Quaternion.identity;
+
+        RefreshWeaponVisibility();
     }
 
     // =============================

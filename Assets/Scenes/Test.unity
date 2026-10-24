@@ -515,6 +515,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   encounter: {fileID: 0}
+  golelingEncounter: {fileID: 0}
+  requiredBoss: {fileID: 0}
   gate: {fileID: 1547581218}
   destinationScene: Level01_Castle
   requireSceneClear: 1
@@ -748,6 +750,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 576736044}
   animator: {fileID: 576736042}
 --- !u!136 &91575037
@@ -1191,6 +1197,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 1330963746}
   animator: {fileID: 1330963744}
 --- !u!136 &103614529
@@ -1871,7 +1881,7 @@ MonoBehaviour:
   knockbackDuration: 0.2
   respawnPoint: {fileID: 999224314}
   respawnDelay: 2
-  restartSceneOnDeath: 0
+  restartSceneOnDeath: 1
   slimeAnimator: {fileID: 1631259447}
   playerMovement: {fileID: 158002741}
   playerMimic: {fileID: 158002744}
@@ -1911,17 +1921,21 @@ MonoBehaviour:
   slimeVisual: {fileID: 4853022}
   warriorVisual: {fileID: 2048045837}
   archerVisual: {fileID: 0}
+  mageVisual: {fileID: 0}
   slimeAnimator: {fileID: 1631259447}
   warriorAnimator: {fileID: 2048045838}
   archerAnimator: {fileID: 0}
+  mageAnimator: {fileID: 0}
   weaponPivot: {fileID: 996679361}
   slimeWeaponAnchor: {fileID: 1535151307}
   warriorWeaponAnchor: {fileID: 191320116}
   slimeMoveSpeedMultiplier: 1
   warriorMoveSpeedMultiplier: 0.5
   archerMoveSpeedMultiplier: 1
+  mageMoveSpeedMultiplier: 0.9
   warriorUnlocked: 0
   archerUnlocked: 0
+  mageUnlocked: 0
   transformEffectPrefab: {fileID: 1560151849}
   effectSpawnPoint: {fileID: 0}
   playerMovement: {fileID: 158002741}
@@ -1995,6 +2009,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 384485872}
   animator: {fileID: 384485870}
 --- !u!136 &173384113
@@ -2425,6 +2443,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 1253092535}
   animator: {fileID: 1253092533}
 --- !u!136 &221723744
@@ -5727,6 +5749,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 671588382}
   animator: {fileID: 671588380}
 --- !u!136 &533192586
@@ -8550,6 +8576,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 574323175}
   animator: {fileID: 574323173}
 --- !u!136 &852025443
@@ -10331,6 +10361,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 2
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 2034999551}
   animator: {fileID: 2034999549}
 --- !u!136 &1072999919
@@ -10566,6 +10600,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 1436006594}
   animator: {fileID: 1436006592}
 --- !u!136 &1092252781
@@ -11428,6 +11466,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 1401374153}
   animator: {fileID: 1401374151}
 --- !u!136 &1170052232
@@ -12728,6 +12770,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 240969382}
   animator: {fileID: 240969380}
 --- !u!136 &1335543518
@@ -16993,6 +17039,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 1374238941}
   animator: {fileID: 1374238939}
 --- !u!136 &1805033148
@@ -17293,6 +17343,10 @@ MonoBehaviour:
   attackRange: 1
   attackCooldown: 1.2
   attackDamage: 1
+  attackRecovery: 0.8
+  directionalMelee: 0
+  meleeReach: 1.15
+  meleeHalfAngle: 50
   visual: {fileID: 973908378}
   animator: {fileID: 973908376}
 --- !u!136 &1836374052
@@ -19517,7 +19571,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slimeDamage: 1
-  warriorDamage: 2
+  warriorDamage: 5
   damageBonus: 0
   playerMimic: {fileID: 158002744}
 --- !u!1 &2087686987

@@ -26,16 +26,16 @@ public class WeaponManager : MonoBehaviour
     public void EquipWeapon(GameObject weaponPrefab)
     {
         // É¾³ý¾ÉÎäÆ÷
-        if (currentWeapon != null)
+        var nextWeapon = weaponPrefab.transform.IsChildOf(weaponPivot)
+            ? weaponPrefab : Instantiate(weaponPrefab, weaponPivot);
+        foreach (Transform child in weaponPivot)
         {
-            Destroy(currentWeapon);
+            if (child.gameObject == nextWeapon || child.GetComponentInChildren<SwordHitbox>(true) == null) continue;
+            child.gameObject.SetActive(false);
+            Destroy(child.gameObject);
         }
-
-        // ´´½¨ÐÂÎäÆ÷
-        currentWeapon = Instantiate(
-            weaponPrefab,
-            weaponPivot
-        );
+        currentWeapon = nextWeapon;
+        currentWeapon.SetActive(true);
 
         currentWeapon.transform.localPosition =
             Vector3.zero;
@@ -64,6 +64,8 @@ public class WeaponManager : MonoBehaviour
                 newHitbox
             );
         }
+
+        if (playerMimic != null) playerMimic.RefreshWeaponVisibility();
 
         Debug.Log(
             "Equipped: " +

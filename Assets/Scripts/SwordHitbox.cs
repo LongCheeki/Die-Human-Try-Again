@@ -4,7 +4,7 @@ public class SwordHitbox : MonoBehaviour
 {
     [Header("Damage")]
     public int slimeDamage = 1;
-    public int warriorDamage = 2;
+    public int warriorDamage = 5;
 
     [Header("Run Bonus")]
     public int damageBonus = 0;
@@ -14,6 +14,32 @@ public class SwordHitbox : MonoBehaviour
 
     private bool canDamage = false;
 
+    private BoxCollider weaponCollider;
+    private Vector3 originalSize;
+    private Vector3 originalCenter;
+
+    public void SetWarriorRange(bool warrior)
+    {
+        if (weaponCollider == null)
+        {
+            weaponCollider = GetComponent<BoxCollider>();
+            if (weaponCollider == null) return;
+            originalSize = weaponCollider.size;
+            originalCenter = weaponCollider.center;
+        }
+        int axis = originalSize.x >= originalSize.y && originalSize.x >= originalSize.z ? 0 :
+            originalSize.y >= originalSize.z ? 1 : 2;
+        var size = originalSize;
+        var center = originalCenter;
+        if (warrior)
+        {
+            size[axis] *= 1.4f;
+            center[axis] += (size[axis] - originalSize[axis]) * 0.5f *
+                (originalCenter[axis] < 0f ? -1f : 1f);
+        }
+        weaponCollider.size = size;
+        weaponCollider.center = center;
+    }
     public void EnableDamage()
     {
         canDamage = true;
@@ -23,6 +49,8 @@ public class SwordHitbox : MonoBehaviour
     {
         canDamage = false;
     }
+
+    private void OnTriggerStay(Collider other) { OnTriggerEnter(other); }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -62,7 +90,8 @@ public class SwordHitbox : MonoBehaviour
 
         enemyHealth.TakeDamage(
             finalDamage,
-            knockbackDirection
+            knockbackDirection,
+            playerMimic
         );
 
         Debug.Log(
