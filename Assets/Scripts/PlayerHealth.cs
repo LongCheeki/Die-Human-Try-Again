@@ -23,6 +23,9 @@ public class PlayerHealth : MonoBehaviour
     public float respawnDelay = 2f;
     public bool restartSceneOnDeath;
 
+    [Header("Fall Recovery")]
+    public float fallDeathY = -8f;
+
     [Header("References")]
     public Animator slimeAnimator;
     public PlayerMovement playerMovement;
@@ -52,6 +55,12 @@ public class PlayerHealth : MonoBehaviour
         {
             healthUI.UpdateHealthUI();
         }
+    }
+
+    private void Update()
+    {
+        if (!isDead && transform.position.y < fallDeathY)
+            TakeTrapDamage(maxHealth);
     }
 
     // ÆÕÍ¨ÊÜÉË

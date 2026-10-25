@@ -34,6 +34,7 @@ public sealed class GolelingBossAI : MonoBehaviour
     private CharacterSfx sfx;
     private float phaseTime;
     private float chargeDistance;
+    private float retreatDistance;
     private float nextAttack;
     private bool impactDone;
     private bool rushHit;
@@ -46,6 +47,8 @@ public sealed class GolelingBossAI : MonoBehaviour
     private NavMeshPath chasePath;
     private int chaseCorner;
     private float nextPathUpdate;
+    private float hurtUntil;
+    private bool pendingHurt;
 
     private void Awake()
     {
@@ -72,6 +75,8 @@ public sealed class GolelingBossAI : MonoBehaviour
         chasePath = new NavMeshPath();
         chaseCorner = 1;
         nextPathUpdate = 0f;
+        hurtUntil = 0f;
+        pendingHurt = false;
         IsActive = true;
         phase = Phase.Idle;
         nextAttack = Time.time + 1.2f;
@@ -89,13 +94,18 @@ public sealed class GolelingBossAI : MonoBehaviour
         if (player == null || player.GetCurrentHealth() <= 0f) { IsActive = false; ClearWarning(); return; }
         var dt = Time.fixedDeltaTime;
         phaseTime += dt;
+        if (hurtUntil > 0f && Time.time >= hurtUntil)
+        {
+            hurtUntil = 0f;
+            Play("Flying_Idle");
+        }
         var toPlayer = player.transform.position - body.position;
         toPlayer.y = 0f;
         var distance = toPlayer.magnitude;
         if (phase == Phase.Idle)
         {
             var ranged = mimic != null && mimic.IsArcher();
-            var clearApproach = distance < 0.01f || MovementClearance(toPlayer.normalized, distance) >= distance - 0.1f;
+            var clearApproach = HasLineOfSight();
             if (!clearApproach || distance > (ranged ? 3.4f : punchRange * 0.9f))
             {
                 var direction = ChaseDirection();
@@ -136,7 +146,7 @@ public sealed class GolelingBossAI : MonoBehaviour
                 warning.startColor = color;
                 warning.endColor = color;
             }
-            if (phaseTime < WindupTime()) return;
+            if (phaseTime < WindupTime() || Time.time < hurtUntil) return;
             ClearWarning();
             phase = Phase.Attack;
             phaseTime = 0f;
@@ -162,13 +172,20 @@ public sealed class GolelingBossAI : MonoBehaviour
                 var movement = Move(lockedDirection * Mathf.Min(speed * dt, Mathf.Max(0f, limit - chargeDistance)));
                 chargeDistance += movement;
                 RushDamage();
-                if (movement < speed * dt * 0.4f || chargeDistance >= limit || phaseTime >= (CurrentAttack == AttackKind.Charge ? chargeRange / Mathf.Max(0.1f, chargeSpeed) + 0.25f : 0.6f))
+                if (rushHit || movement < speed * dt * 0.4f || chargeDistance >= limit || phaseTime >= (CurrentAttack == AttackKind.Charge ? chargeRange / Mathf.Max(0.1f, chargeSpeed) + 0.25f : 0.6f))
                 {
                     if (CurrentAttack == AttackKind.Charge) Play("Headbutt", true);
                     Recover();
                 }
             }
             return;
+        }
+        if (phase == Phase.Recovery &&
+            (CurrentAttack == AttackKind.Charge || CurrentAttack == AttackKind.Headbutt) &&
+            distance < punchRange && retreatDistance < 1.2f)
+        {
+            var away = distance > 0.01f ? -toPlayer.normalized : -lockedDirection;
+            retreatDistance += Move(away * Mathf.Min(moveSpeed * dt, 1.2f - retreatDistance));
         }
         if (phase == Phase.Recovery && phaseTime >= (CurrentAttack == AttackKind.Charge ? 1.5f : CurrentAttack == AttackKind.Headbutt ? 1f : 0.8f))
         {
@@ -259,22 +276,44 @@ public sealed class GolelingBossAI : MonoBehaviour
         delta = desired - start;
         var length = delta.magnitude;
         if (length <= 0.0001f) return 0f;
-        length = MovementClearance(delta / length, length);
+        length = MovementClearance(delta / length, length, true);
         body.MovePosition(start + delta.normalized * length);
         return length;
     }
 
-    private float MovementClearance(Vector3 direction, float length)
+    private float MovementClearance(Vector3 direction, float length, bool stopAtPlayer = false)
     {
         var center = body.position + capsule.center;
         var half = Mathf.Max(0f, capsule.height * 0.5f - capsule.radius);
         var hits = Physics.CapsuleCastAll(center + Vector3.up * half, center - Vector3.up * half, capsule.radius, direction, length, ~0, QueryTriggerInteraction.Ignore);
         foreach (var hit in hits)
         {
-            if (hit.collider.GetComponentInParent<GolelingBossAI>() == this || hit.collider.GetComponentInParent<PlayerHealth>() != null) continue;
+            if (hit.collider.GetComponentInParent<GolelingBossAI>() == this) continue;
+            if (hit.collider.GetComponentInParent<PlayerHealth>() != null)
+            {
+                var toTarget = hit.collider.bounds.center - center;
+                toTarget.y = 0f;
+                if (!stopAtPlayer || Vector3.Dot(direction, toTarget) <= 0f) continue;
+            }
             length = Mathf.Min(length, Mathf.Max(0f, hit.distance - 0.04f));
         }
         return length;
+    }
+
+    private bool HasLineOfSight()
+    {
+        var other = player.GetComponent<Collider>();
+        var target = other != null ? other.bounds.center : player.transform.position;
+        var origin = body.position;
+        var delta = target - origin;
+        if (delta.sqrMagnitude < 0.0001f) return true;
+        foreach (var hit in Physics.RaycastAll(origin, delta.normalized, delta.magnitude, ~0, QueryTriggerInteraction.Ignore))
+        {
+            if (hit.collider.GetComponentInParent<GolelingBossAI>() == this ||
+                hit.collider.GetComponentInParent<PlayerHealth>() != null) continue;
+            return false;
+        }
+        return true;
     }
 
     private void Face(Vector3 direction)
@@ -282,7 +321,17 @@ public sealed class GolelingBossAI : MonoBehaviour
         if (direction.sqrMagnitude > 0.001f) body.rotation = Quaternion.LookRotation(direction);
     }
 
-    private void Recover() { phase = Phase.Recovery; phaseTime = 0f; }
+    private void Recover()
+    {
+        phase = Phase.Recovery;
+        phaseTime = 0f;
+        retreatDistance = 0f;
+        if (pendingHurt)
+        {
+            pendingHurt = false;
+            PlayHitReaction();
+        }
+    }
 
     private void ShowWarning()
     {
@@ -354,6 +403,7 @@ public sealed class GolelingBossAI : MonoBehaviour
     private void Play(string name, bool restart = false)
     {
         if (animationPlayer == null || !clips.TryGetValue(name, out var clip)) return;
+        if (name != "HitReact" && Time.time < hurtUntil) return;
         if (!restart && playingClip == clip) return;
         playingClip = clip;
         if (restart) animationPlayer.Play(clip); else animationPlayer.CrossFade(clip, 0.12f);
@@ -361,13 +411,25 @@ public sealed class GolelingBossAI : MonoBehaviour
 
     private void OnHurt(float remaining)
     {
-        if (remaining > 0f && phase == Phase.Recovery) Play("HitReact", true);
+        if (remaining <= 0f || phase == Phase.Dead) return;
+        if (phase == Phase.Attack) pendingHurt = true;
+        else PlayHitReaction();
+    }
+
+    private void PlayHitReaction()
+    {
+        if (Time.time < hurtUntil || animationPlayer == null || !clips.TryGetValue("HitReact", out var clip)) return;
+        Play("HitReact", true);
+        var state = animationPlayer[clip];
+        hurtUntil = Time.time + state.length / Mathf.Max(0.01f, Mathf.Abs(state.speed));
     }
 
     private void Die()
     {
         IsActive = false;
         phase = Phase.Dead;
+        hurtUntil = 0f;
+        pendingHurt = false;
         ClearWarning();
         if (visual != null)
         {

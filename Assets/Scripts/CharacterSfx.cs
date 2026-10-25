@@ -82,7 +82,7 @@ public sealed class CharacterSfx : MonoBehaviour
         if (travelled >= Mathf.Max(0.1f, stepDistance))
         {
             travelled = 0f;
-            bool slime = isPlayer && (mimic == null || !mimic.IsWarrior());
+            bool slime = isPlayer && (mimic == null || (!mimic.IsWarrior() && !mimic.IsArcher()));
             if (slime && slimeMovementClip != null)
             {
                 if (Time.time >= nextSlimeStepTime)

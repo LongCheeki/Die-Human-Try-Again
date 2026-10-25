@@ -3,128 +3,83 @@ using UnityEngine.InputSystem;
 
 public class PlayerArcherCombat : MonoBehaviour
 {
-    [Header("References")]
     public PlayerMimic playerMimic;
-
     public GameObject arrowPrefab;
     public Transform arrowSpawnPoint;
-
-    [Header("Attack")]
     public float attackCooldown = 0.6f;
-
-    [Header("Animation")]
     public Animator archerAnimator;
+    public bool HasPendingShot { get; private set; }
+    public bool IsShooting { get; private set; }
+    private float nextAttackTime;
+    private Vector3 shotDirection;
+    private Quaternion shotRotation;
+    private PlayerHealth health;
+    private CharacterSfx sfx;
 
-    private float nextAttackTime = 0f;
-
-    void Update()
+    private void Awake()
     {
-        if (Mouse.current == null)
-            return;
+        health = GetComponent<PlayerHealth>();
+        sfx = CharacterSfx.Get(gameObject);
+    }
 
-        // 只有弓箭手形态才能射箭
-        if (playerMimic == null ||
-            !playerMimic.IsArcher())
+    private void Update()
+    {
+        if (playerMimic == null || !playerMimic.IsArcher() ||
+            (health != null && health.GetCurrentHealth() <= 0f))
         {
+            if (IsShooting) CancelShot();
             return;
         }
-
-        if (Mouse.current.leftButton.wasPressedThisFrame &&
-            Time.time >= nextAttackTime)
-        {
+        if (Time.timeScale == 0f || Mouse.current == null) return;
+        if (Mouse.current.leftButton.wasPressedThisFrame && !IsShooting && Time.time >= nextAttackTime)
             Shoot();
-
-            nextAttackTime =
-                Time.time +
-                attackCooldown;
-        }
     }
 
-    void Shoot()
+    private void Shoot()
     {
-        if (arrowPrefab == null)
-        {
-            Debug.LogWarning(
-                "Player Archer: Arrow Prefab missing!"
-            );
-
-            return;
-        }
-
-        if (arrowSpawnPoint == null)
-        {
-            Debug.LogWarning(
-                "Player Archer: Arrow Spawn Point missing!"
-            );
-
-            return;
-        }
-
-        // =========================
-        // ATTACK ANIMATION
-        // =========================
-
-        if (archerAnimator != null)
-        {
-            archerAnimator.SetInteger(
-                "Trigger Number",
-                2
-            );
-
-            archerAnimator.SetTrigger(
-                "Trigger"
-            );
-        }
-
-        // =========================
-        // SHOOT DIRECTION
-        // =========================
-
-        Vector3 direction;
-
-        // 使用弓箭手当前视觉模型的朝向
-        if (playerMimic != null &&
-            playerMimic.archerVisual != null)
-        {
-            direction =
-                playerMimic.archerVisual.transform.forward;
-        }
-        else
-        {
-            // 找不到时才使用 Player 根物体方向
-            direction =
-                transform.forward;
-        }
-
-        // 不让箭往上或往下乱飞
-        direction.y = 0f;
-        direction.Normalize();
-
-        // =========================
-        // CREATE ARROW
-        // =========================
-
-        GameObject arrow =
-            Instantiate(
-                arrowPrefab,
-                arrowSpawnPoint.position,
-                Quaternion.identity
-            );
-
-        PlayerArrowProjectile projectile =
-            arrow.GetComponent<PlayerArrowProjectile>();
-
-        if (projectile != null)
-        {
-            projectile.SetDirection(
-                direction
-            );
-        }
-        else
-        {
-            Debug.LogWarning(
-                "Player Arrow has no PlayerArrowProjectile script!"
-            );
-        }
+        if (arrowPrefab == null || arrowSpawnPoint == null || archerAnimator == null ||
+            playerMimic == null || !playerMimic.IsArcher() ||
+            (health != null && health.GetCurrentHealth() <= 0f)) return;
+        shotDirection = playerMimic.archerVisual.transform.forward;
+        shotDirection.y = 0f;
+        if (shotDirection.sqrMagnitude < 0.001f) return;
+        shotDirection.Normalize();
+        shotRotation = Quaternion.LookRotation(shotDirection, Vector3.up);
+        HasPendingShot = true;
+        IsShooting = true;
+        nextAttackTime = Time.time + attackCooldown;
+        archerAnimator.ResetTrigger("Shoot");
+        archerAnimator.SetTrigger("Shoot");
     }
+
+    private void LateUpdate()
+    {
+        if (HasPendingShot && playerMimic != null && playerMimic.IsArcher())
+            playerMimic.archerVisual.transform.rotation = shotRotation;
+    }
+
+    public void ReleaseArrow()
+    {
+        if (!HasPendingShot || playerMimic == null || !playerMimic.IsArcher() ||
+            (health != null && health.GetCurrentHealth() <= 0f)) return;
+        HasPendingShot = false;
+        var arrow = Instantiate(arrowPrefab, arrowSpawnPoint.position, Quaternion.LookRotation(shotDirection));
+        var projectile = arrow.GetComponent<PlayerArrowProjectile>();
+        if (projectile != null) projectile.SetDirection(shotDirection);
+        sfx.Attack();
+    }
+
+    public void FinishShot()
+    {
+        HasPendingShot = false;
+        IsShooting = false;
+    }
+
+    public void CancelShot()
+    {
+        FinishShot();
+        if (archerAnimator != null) archerAnimator.ResetTrigger("Shoot");
+    }
+
+    private void OnDisable() { CancelShot(); }
 }

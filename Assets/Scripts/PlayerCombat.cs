@@ -53,6 +53,8 @@ public class PlayerCombat : MonoBehaviour
         if (Time.timeScale == 0f || (health != null && health.GetCurrentHealth() <= 0f))
             return;
 
+        if (playerMimic != null && !playerMimic.IsSlime() && !playerMimic.IsWarrior()) return;
+
         if (Mouse.current == null)
             return;
 
