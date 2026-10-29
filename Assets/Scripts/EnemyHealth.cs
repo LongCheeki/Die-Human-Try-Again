@@ -11,9 +11,39 @@ public class EnemyHealth : MonoBehaviour
     public float knockbackDuration = 0.25f;
 
     private float currentHealth;
-    public float GetCurrentHealth() => currentHealth;
+
+    // =============================
+    // PUBLIC HEALTH INFO
+    // =============================
+
+    public float GetCurrentHealth()
+    {
+        return currentHealth;
+    }
+
+    public float GetMaxHealth()
+    {
+        return maxHealth;
+    }
+
+    public float GetHealthPercent()
+    {
+        if (maxHealth <= 0)
+            return 0f;
+
+        return currentHealth / maxHealth;
+    }
+
+    // =============================
+    // EVENTS
+    // =============================
+
     public event System.Action<float> HealthChanged;
     public event System.Action Died;
+
+    // =============================
+    // REFERENCES
+    // =============================
 
     private Rigidbody rb;
     private EnemyAI enemyAI;
@@ -21,55 +51,137 @@ public class EnemyHealth : MonoBehaviour
 
     private bool isKnockedBack = false;
 
+    // =============================
+    // AWAKE
+    // =============================
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        enemyAI = GetComponent<EnemyAI>();
-        bossAI = GetComponent<GolelingBossAI>();
+
+        enemyAI =
+            GetComponent<EnemyAI>();
+
+        bossAI =
+            GetComponent<GolelingBossAI>();
     }
+
+    // =============================
+    // START
+    // =============================
 
     void Start()
     {
-        currentHealth = maxHealth;
+        currentHealth =
+            maxHealth;
+
+        HealthChanged?.Invoke(
+            currentHealth
+        );
     }
 
-    public void TakeDamage(float damage, Vector3 knockbackDirection, PlayerMimic attacker = null)
+    // =============================
+    // DAMAGE
+    // =============================
+
+    public void TakeDamage(
+        float damage,
+        Vector3 knockbackDirection,
+        PlayerMimic attacker = null)
     {
-        if (currentHealth <= 0)
+        if (currentHealth <= 0f)
             return;
 
-        var shield = GetComponent<BossShield>();
-        if (shield != null && shield.AbsorbHit(attacker)) return;
+        // =========================
+        // BOSS SHIELD
+        // =========================
 
-        if (bossAI != null) damage *= bossAI.GetIncomingDamageMultiplier();
-        currentHealth = Mathf.Max(0f, currentHealth - damage);
-        HealthChanged?.Invoke(currentHealth);
+        BossShield shield =
+            GetComponent<BossShield>();
 
-        Debug.Log("Enemy HP: " + currentHealth);
+        if (shield != null &&
+            shield.AbsorbHit(attacker))
+        {
+            return;
+        }
 
-        if (currentHealth <= 0)
+        // =========================
+        // EXISTING GOLELING BOSS
+        // =========================
+
+        if (bossAI != null)
+        {
+            damage *=
+                bossAI.GetIncomingDamageMultiplier();
+        }
+
+        // =========================
+        // APPLY DAMAGE
+        // =========================
+
+        currentHealth =
+            Mathf.Max(
+                0f,
+                currentHealth - damage
+            );
+
+        HealthChanged?.Invoke(
+            currentHealth
+        );
+
+        Debug.Log(
+            "Enemy HP: " +
+            currentHealth +
+            "/" +
+            maxHealth
+        );
+
+        // =========================
+        // DEATH
+        // =========================
+
+        if (currentHealth <= 0f)
         {
             Die();
             return;
         }
 
-        // 开始击退
-        if (knockbackDirection != Vector3.zero && knockbackSpeed > 0f)
-            StartCoroutine(KnockbackCoroutine(knockbackDirection));
+        // =========================
+        // KNOCKBACK
+        // =========================
+
+        if (rb != null &&
+            knockbackDirection != Vector3.zero &&
+            knockbackSpeed > 0f)
+        {
+            StartCoroutine(
+                KnockbackCoroutine(
+                    knockbackDirection
+                )
+            );
+        }
     }
 
-    IEnumerator KnockbackCoroutine(Vector3 direction)
+    // =============================
+    // KNOCKBACK
+    // =============================
+
+    IEnumerator KnockbackCoroutine(
+        Vector3 direction)
     {
-        // 防止同一时间启动多个击退
         if (isKnockedBack)
+            yield break;
+
+        if (rb == null)
             yield break;
 
         isKnockedBack = true;
 
-        // 击退的时候暂时关闭 AI
+        // 普通 EnemyAI 暂停
         if (enemyAI != null)
         {
-            enemyAI.enabled = false;
+            enemyAI.enabled =
+                false;
         }
 
         direction.y = 0f;
@@ -77,54 +189,70 @@ public class EnemyHealth : MonoBehaviour
 
         float timer = 0f;
 
-        while (timer < knockbackDuration)
+        while (
+            timer <
+            knockbackDuration)
         {
-            timer += Time.fixedDeltaTime;
+            timer +=
+                Time.fixedDeltaTime;
 
-            // 随时间逐渐减速
             float strength =
-                1f - (timer / knockbackDuration);
+                1f -
+                (timer /
+                 knockbackDuration);
 
             Vector3 velocity =
                 direction *
                 knockbackSpeed *
                 strength;
 
-            rb.linearVelocity = new Vector3(
-                velocity.x,
-                rb.linearVelocity.y,
-                velocity.z
-            );
+            rb.linearVelocity =
+                new Vector3(
+                    velocity.x,
+                    rb.linearVelocity.y,
+                    velocity.z
+                );
 
-            yield return new WaitForFixedUpdate();
+            yield return
+                new WaitForFixedUpdate();
         }
 
-        // 停止水平移动
-        rb.linearVelocity = new Vector3(
-            0f,
-            rb.linearVelocity.y,
-            0f
-        );
+        rb.linearVelocity =
+            new Vector3(
+                0f,
+                rb.linearVelocity.y,
+                0f
+            );
 
-        // 恢复 AI
         if (enemyAI != null)
         {
-            enemyAI.enabled = true;
+            enemyAI.enabled =
+                true;
         }
 
         isKnockedBack = false;
     }
 
+    // =============================
+    // DEATH
+    // =============================
+
     void Die()
     {
-        Debug.Log("Enemy Dead");
+        Debug.Log(
+            "Enemy Dead"
+        );
 
         if (enemyAI != null)
         {
-            enemyAI.enabled = false;
+            enemyAI.enabled =
+                false;
         }
 
         Died?.Invoke();
-        Destroy(gameObject);
+
+        Destroy(
+            gameObject
+        );
     }
 }
